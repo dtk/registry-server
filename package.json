@@ -1,0 +1,22 @@
+{
+  "name": "registry-server",
+  "version": "1.0.0",
+  "description": "Library for storing information about executors and their tags",
+  "main": "dist/index",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build-ts": "tsc",
+    "start": "tsc && npm run serve",
+    "serve": "node dist/index.js",
+    "watch-node": "nodemon dist/app.js",
+    "watch-ts": "tsc -w"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "flat-db": "^3.0.0",
+    "flat-file-db": "^1.0.0",
+    "protobufjs": "^6.8.8",
+    "ts-nats": "^1.1.2"
+  }
+}

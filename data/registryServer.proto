@@ -1,0 +1,7 @@
+package registryserverpackage;
+syntax = "proto3";
+
+message RegistrationMessage {
+  string guid = 1;
+  repeated string tags = 2;
+}
