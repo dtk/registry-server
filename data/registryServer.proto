@@ -5,3 +5,17 @@ message RegistrationMessage {
   string guid = 1;
   repeated string tags = 2;
 }
+
+service Greeter {
+  rpc GetTags (GetTagsMessage) returns (ReturnTagsMessage) {}
+}
+
+message GetTagsMessage {
+  string guid = 1;
+}
+
+// The response message containing the greetings
+message ReturnTagsMessage {
+  string guid = 1;
+  repeated string tags = 2;
+}

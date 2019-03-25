@@ -14,9 +14,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@grpc/proto-loader": "^0.4.0",
     "flat-db": "^3.0.0",
     "flat-file-db": "^1.0.0",
+    "grpc": "^1.19.0",
     "protobufjs": "^6.8.8",
-    "ts-nats": "^1.1.2"
+    "ts-nats": "^1.1.2",
+    "uuid": "^3.3.2"
   }
 }

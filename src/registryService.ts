@@ -12,7 +12,7 @@ export default class RegistryService {
     connect({servers: ["nats://dev22.r8network.com:4222"], payload: Payload.BINARY}).then((nc) => {
       this.nc = nc;
       this.listenForRegistrations();
-      this.listenForRequests();
+      this.listenForGrpcRequests();
     }).catch((ex) => {
       console.log("Unable to connect to nats server");
     });
@@ -21,7 +21,7 @@ export default class RegistryService {
   async getRegisteredNode(guid: string) {
     var db = flatfile.sync('data/registeredExecutors');
     let a = db.get(guid);
-    
+    return a;
   }
 
   private async listenForRegistrations() {
@@ -50,22 +50,39 @@ export default class RegistryService {
     }
   }
 
-  private async listenForRequests() {
-    console.log("Started listening for requests");
-    if(this.nc != undefined) {
-      let sub = await this.nc.subscribe('query_registration_service', async (err: any, msg: any) => {
-        if(err) {
-          throw new Error(err.message);
-        } else {
-          let tags = msg.data;
-          for (let tag of tags) {
-            console.log(tag);
-          }
-        }
+  private async listenForGrpcRequests() {
+    console.log("Started listening for grpc requests");
+    var grpc = require('grpc');
+    var protoLoader = require('@grpc/proto-loader');
+    var packageDefinition = protoLoader.loadSync(
+      PROTO_MESSAGE_PATH,
+      {keepCase: true,
+       longs: String,
+       enums: String,
+       defaults: true,
+       oneofs: true
       });
-    } else {
-      console.log('Cannot start listener because registry service is not connected to nats');
-    }
+
+    var hello_proto = grpc.loadPackageDefinition(packageDefinition).registryserverpackage;
+
+    var server = new grpc.Server();
+    server.addService(hello_proto.Greeter.service, { GetTags: this.getTags });
+    server.bind('0.0.0.0:50051', grpc.ServerCredentials.createInsecure());
+    server.start();
+  }
+
+  async sayHello(call: any, callback: any) {
+    console.log("Got here");
+    callback(null, {message: 'Hello ' + call.request.name});
+  }
+
+  async getTags(call: any, callback: any) {
+    let guid = call.request.guid
+    console.log(guid);
+    var db = flatfile.sync('data/registeredExecutors');
+    let a = db.get(guid);
+    console.log(a['tags']);
+    callback(null, { guid: guid, tags: a['tags'] })
   }
 
   async decodeRegistrationMessage(message: Buffer) {
